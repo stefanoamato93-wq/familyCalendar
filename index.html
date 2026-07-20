@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Calendario famiglia">
+<meta name="theme-color" content="#007aff">
+<title>Calendario famiglia</title>
+<script>
+(function () {
+  const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>" +
+    "<rect x='6' y='12' width='52' height='46' rx='9' fill='#fff' stroke='#007aff' stroke-width='4'/>" +
+    "<path d='M6 22h52v-1a9 9 0 0 0-9-9H15a9 9 0 0 0-9 9z' fill='#007aff'/>" +
+    "<rect x='17' y='5' width='6' height='13' rx='3' fill='#0a4a7a'/><rect x='41' y='5' width='6' height='13' rx='3' fill='#0a4a7a'/>" +
+    "<circle cx='20' cy='37' r='4' fill='#ff2d92'/><circle cx='32' cy='37' r='4' fill='#34c759'/><circle cx='44' cy='37' r='4' fill='#ff9500'/>" +
+    "<circle cx='20' cy='49' r='4' fill='#007aff'/><circle cx='32' cy='49' r='4' fill='#af52de'/><circle cx='44' cy='49' r='4' fill='#ffcc00'/></svg>";
+  const uri = 'data:image/svg+xml,' + encodeURIComponent(svg);
+  const add = (rel, href) => { const el = document.createElement('link'); el.rel = rel; el.href = href; document.head.appendChild(el); };
+  add('icon', uri); add('apple-touch-icon', uri);
+  add('manifest', 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify({
+    name:'Calendario famiglia', short_name:'Famiglia', display:'standalone', start_url:'.',
+    background_color:'#f2f2f7', theme_color:'#007aff', icons:[{src:uri,sizes:'any',type:'image/svg+xml',purpose:'any maskable'}]
+  })));
+})();
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#f2f2f7;--card:#fff;--primary:#007aff;--danger:#ff3b30;--success:#34c759;--text:#1c1c1e;--secondary:#8e8e93;--border:#c6c6c8;--input:#e5e5ea;--radius:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;padding-bottom:env(safe-area-inset-bottom)}
+.header{background:var(--card);border-bottom:.5px solid var(--border);position:sticky;top:0;z-index:100}
+.header-top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 8px;gap:10px}
+.header-top h1{font-size:17px;font-weight:600;white-space:nowrap}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--border);vertical-align:middle}.dot.online{background:var(--success)}.dot.offline{background:var(--secondary)}.dot.error{background:var(--danger)}
+.month-nav{display:flex;align-items:center;gap:10px}.month-nav button{background:none;border:0;color:var(--primary);font-size:22px;font-weight:600;padding:0 5px;cursor:pointer}.month-label{font-size:15px;font-weight:700;min-width:125px;text-align:center}
+.header-tools{display:flex;gap:8px;padding:0 16px 10px;justify-content:flex-end}.header-tools button{background:var(--input);border:0;color:var(--primary);font-size:13px;font-weight:600;padding:6px 12px;border-radius:14px;cursor:pointer}.header-tools .who{margin-right:auto;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.container{padding:12px 12px 40px;max-width:760px;margin:0 auto}.privacy{font-size:12px;color:var(--secondary);background:var(--card);border-radius:10px;padding:9px 11px;margin-bottom:10px}.privacy strong{color:var(--text)}
+.members{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.member-pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);padding:5px 10px;border-radius:14px;font-size:12px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.04)}.member-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.grid-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px}.grid-dow span{text-align:center;font-size:10px;font-weight:700;color:var(--secondary);text-transform:uppercase}.grid-weeks{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}.gcell{min-height:92px;background:var(--card);border-radius:8px;padding:4px;cursor:pointer;display:flex;flex-direction:column;gap:3px;overflow:hidden;box-shadow:0 1px 1px rgba(0,0,0,.04);position:relative}.gcell.out{background:transparent;box-shadow:none;pointer-events:none}.gcell.wknd{background:#ececf2}.gcell:active{filter:brightness(.96)}.gcell.mine{box-shadow:inset 0 -3px 0 rgba(0,122,255,.25),0 1px 1px rgba(0,0,0,.04)}
+.gnum{font-size:11px;font-weight:700;line-height:18px;min-width:18px;height:18px;text-align:center;align-self:flex-start}.gcell.today .gnum{background:var(--primary);color:#fff;border-radius:50%}.person-row{display:flex;align-items:flex-start;gap:3px;min-width:0;font-size:8.5px;line-height:1.15}.person-row .member-dot{width:6px;height:6px;margin-top:2px}.person-text{min-width:0;overflow:hidden}.person-name{font-weight:800}.person-loc{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#444}.gempty{font-size:8px;color:var(--secondary);margin-top:auto}.holiday{box-shadow:inset 0 3px 0 #e0a800,0 1px 1px rgba(0,0,0,.04)}.holiday:not(.today) .gnum{background:#e0a800;color:#fff;border-radius:9px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:2000;display:flex;align-items:flex-end;justify-content:center}.modal-overlay.hidden{display:none}.modal{background:var(--bg);width:100%;max-width:640px;border-radius:16px 16px 0 0;max-height:92dvh;display:flex;flex-direction:column;animation:up .22s ease-out}@keyframes up{from{transform:translateY(100%)}to{transform:none}}.modal-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:.5px solid var(--border);background:var(--card);border-radius:16px 16px 0 0}.modal-header .title{font-size:16px;font-weight:700}.modal-header button{background:none;border:0;color:var(--primary);font-size:15px;font-weight:600;padding:4px;cursor:pointer}.modal-header .danger{color:var(--danger)}.modal-body{overflow:auto;padding:14px 16px 24px}.fieldcard{background:var(--card);border-radius:var(--radius);padding:12px;margin-bottom:10px}.label{font-size:12px;font-weight:700;color:var(--secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}.text-in{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:16px;background:var(--input);outline:none;color:var(--text)}.text-in:focus{border-color:var(--primary);background:#fff}.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.quick button{font-size:13px;padding:5px 11px;border-radius:14px;border:1px solid var(--border);background:var(--input);color:var(--text);cursor:pointer}.quick button.active{background:var(--primary);border-color:var(--primary);color:#fff}.btn{width:100%;padding:14px;border:0;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer}.btn-primary{background:var(--primary);color:#fff}.btn-secondary{background:var(--input);color:var(--text);margin-top:8px}.note{font-size:11.5px;color:var(--secondary);margin-top:8px;line-height:1.35}
+.profile-list{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}.profile-btn{display:flex;align-items:center;gap:9px;width:100%;border:0;background:var(--card);padding:11px 12px;border-radius:11px;font-size:15px;font-weight:700;text-align:left;cursor:pointer}.profile-btn .member-dot{width:12px;height:12px}.profile-btn.managed{opacity:.55;cursor:default}.new-row{display:flex;gap:7px}.new-row input{flex:1}.new-row button{width:auto;padding:0 16px}.error-banner{display:none;background:#ffd6d2;color:#7b1711;border-radius:10px;padding:9px 11px;font-size:12px;margin-bottom:10px}.error-banner.show{display:block}.toast{position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:11px 19px;border-radius:20px;font-size:14px;z-index:3000;opacity:0;transition:opacity .25s;pointer-events:none}.toast.show{opacity:1}
+@media(max-width:520px){.header-top{align-items:flex-start}.month-nav{gap:4px}.month-label{min-width:108px;font-size:14px}.container{padding-left:7px;padding-right:7px}.grid-weeks,.grid-dow{gap:2px}.gcell{min-height:86px;padding:3px}.person-row{font-size:7.8px}.member-pill{font-size:11px;padding:4px 8px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top"><h1>👨‍👩‍👧‍👦 Famiglia <span class="dot" id="statusDot" title="Stato sincronizzazione"></span></h1><div class="month-nav"><button id="prevMonth" aria-label="Mese precedente">‹</button><span class="month-label" id="monthLabel">—</span><button id="nextMonth" aria-label="Mese successivo">›</button></div></div>
+  <div class="header-tools"><button class="who" id="whoBtn">Chi sei?</button><button id="todayBtn">Oggi</button></div>
+</div>
+<div class="container">
+  <div class="error-banner" id="errorBanner">Sincronizzazione non disponibile. Verifica la connessione al database Firebase.</div>
+  <div class="privacy"><strong>Solo posizione.</strong> Qui sono condivise esclusivamente le città, mai eventi, viaggi, orari, prenotazioni o altri dettagli del calendario di Stefano.</div>
+  <div class="members" id="memberLegend"></div>
+  <div id="calendar"></div>
+</div>
+<div class="modal-overlay hidden" id="dayModal"><div class="modal"><div class="modal-header"><button class="danger" id="clearDay">Cancella</button><span class="title" id="dayTitle">Giorno</span><button id="closeDay">Chiudi</button></div><div class="modal-body"><div class="fieldcard"><div class="label" id="locationLabel">Dove sarai?</div><input class="text-in" id="locationInput" maxlength="80" autocomplete="off" placeholder="Es. Torino"><div class="quick" id="quickLocations"></div></div><button class="btn btn-primary" id="saveDay">Salva posizione</button><p class="note">Puoi modificare solo la posizione associata al tuo profilo.</p></div></div></div>
+<div class="modal-overlay hidden" id="profileModal"><div class="modal"><div class="modal-header"><span class="title">Chi sei?</span><button id="closeProfile">Chiudi</button></div><div class="modal-body"><div class="profile-list" id="profileList"></div><div class="fieldcard"><div class="label">Aggiungi il tuo profilo</div><div class="new-row"><input class="text-in" id="newName" maxlength="40" autocomplete="name" placeholder="Il tuo nome"><button class="btn btn-primary" id="addProfile">Aggiungi</button></div><p class="note">Scegli sempre lo stesso nome sui tuoi dispositivi. Stefano è aggiornato automaticamente dal calendario principale.</p></div></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const MONTHS=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const DOW=['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+const IT_HOLIDAYS={'01-01':'Capodanno','01-06':'Epifania','04-25':'Liberazione','05-01':'Festa del Lavoro','06-02':'Festa della Repubblica','08-15':'Ferragosto','11-01':'Ognissanti','12-08':'Immacolata','12-25':'Natale','12-26':'Santo Stefano','04-05':'Pasqua','04-06':'Pasquetta'};
+const SELF_KEY='familyCalendarMemberId';
+const SELF_NAME_KEY='familyCalendarMemberName';
+const STEFANO_ID='stefano';
+// Location-only baseline copied from the main app's published SEED.
+// Live per-day overrides are read strictly from travelCalendar/days/<date>/loc.
+const STEFANO_RANGES=`
+2026-06-01|2026-06-10|Torino
+2026-06-11|2026-06-11|Roma
+2026-06-12|2026-06-13|Olbia
+2026-06-14|2026-06-15|Roma
+2026-06-16|2026-06-17|Torino
+2026-06-18|2026-06-21|Roma
+2026-06-22|2026-06-24|Torino
+2026-06-25|2026-06-25|Roma
+2026-06-26|2026-06-28|Palermo
+2026-06-29|2026-07-02|Torino
+2026-07-03|2026-07-05|Roma
+2026-07-06|2026-07-07|Madrid
+2026-07-08|2026-07-08|Torino
+2026-07-09|2026-07-12|Palermo
+2026-07-13|2026-07-17|Torino
+2026-07-18|2026-07-19|Palermo
+2026-07-20|2026-07-20|Roma
+2026-07-21|2026-08-06|Torino
+2026-08-07|2026-08-13|Roma
+2026-08-14|2026-08-20|Palermo
+2026-08-21|2026-08-25|Eraclea
+2026-08-26|2026-08-26|Marsala
+2026-08-27|2026-08-28|Favignana
+2026-08-29|2026-08-29|Palermo
+2026-08-30|2026-08-31|Roma
+2026-09-01|2026-09-02|Torino
+2026-09-03|2026-09-03|Roma
+2026-09-04|2026-09-06|Varsavia
+2026-09-07|2026-09-09|Torino
+2026-09-10|2026-09-14|Roma
+2026-09-15|2026-09-30|Torino
+2026-10-01|2026-10-01|Roma
+2026-10-02|2026-10-04|Palermo
+2026-10-05|2026-10-05|Roma
+2026-10-06|2026-10-13|Torino
+2026-10-14|2026-10-17|Roma
+2026-10-18|2026-10-20|Torino
+2026-10-21|2026-10-21|Roma
+2026-10-22|2026-10-27|Torino
+2026-10-28|2026-11-02|Roma
+2026-11-03|2026-11-11|Torino
+2026-11-12|2026-11-16|Roma
+2026-11-17|2026-11-24|Torino
+2026-11-25|2026-11-28|Roma
+2026-11-29|2026-11-29|Torino
+2026-11-30|2026-11-30|Roma
+2026-12-01|2026-12-09|Torino
+2026-12-10|2026-12-14|Roma
+2026-12-15|2026-12-27|Torino
+2026-12-28|2026-12-28|Roma
+2026-12-29|2026-12-31|Argentina
+`;
+function pad(n){return String(n).padStart(2,'0')}
+function ymd(y,m,d){return `${y}-${pad(m+1)}-${pad(d)}`}
+function parseDate(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function dateKey(dt){return ymd(dt.getFullYear(),dt.getMonth(),dt.getDate())}
+function todayKey(){return dateKey(new Date())}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function holidayName(k){return IT_HOLIDAYS[k.slice(5)]||''}
+function baselineLocations(){
+  const out={};
+  STEFANO_RANGES.trim().split('\n').forEach(line=>{
+    const [from,to,loc]=line.trim().split('|');
+    for(let d=parseDate(from),end=parseDate(to);d<=end;d.setDate(d.getDate()+1))out[dateKey(d)]=loc;
+  });
+  return out;
+}
+const STEFANO_DEFAULTS=baselineLocations();
+let stefanoLive={};
+let members={};
+let currentId=localStorage.getItem(SELF_KEY)||'';
+let currentName=localStorage.getItem(SELF_NAME_KEY)||'';
+let editingKey='';
+let monthUnsubs=[];
+const now=new Date();
+let viewYear=now.getFullYear(),viewMonth=now.getMonth();
+const seedKeys=Object.keys(STEFANO_DEFAULTS).sort();
+if(seedKeys.length&&(todayKey()<seedKeys[0]||todayKey()>seedKeys[seedKeys.length-1])){
+  const d=parseDate(seedKeys[0]);viewYear=d.getFullYear();viewMonth=d.getMonth();
+}
+function hashString(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
+function normalizeName(name){return name.trim().replace(/\s+/g,' ')}
+function memberIdFromName(name){
+  const normalized=normalizeName(name).toLocaleLowerCase('it-IT').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const slug=normalized.replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,24)||'persona';
+  return `m-${slug}-${hashString(normalized)}`;
+}
+function memberColor(id){
+  if(id===STEFANO_ID)return '#007aff';
+  let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))%360;
+  return `hsl(${h},68%,48%)`;
+}
+function allMembers(){
+  const list=[{id:STEFANO_ID,name:'Stefano',days:null,managed:true}];
+  Object.entries(members).forEach(([id,m])=>{if(id!==STEFANO_ID&&m&&m.name)list.push({id,name:m.name,days:m.days||{},managed:false})});
+  return list.sort((a,b)=>a.managed?-1:b.managed?1:a.name.localeCompare(b.name,'it'));
+}
+function stefanoLocation(k){return Object.prototype.hasOwnProperty.call(stefanoLive,k)?stefanoLive[k]:(STEFANO_DEFAULTS[k]||'')}
+function locationFor(member,k){return member.managed?stefanoLocation(k):((member.days&&member.days[k])||'')}
+function renderLegend(){
+  document.getElementById('memberLegend').innerHTML=allMembers().map(m=>`<span class="member-pill"><span class="member-dot" style="background:${memberColor(m.id)}"></span>${esc(m.name)}</span>`).join('');
+}
+function renderGrid(){
+  document.getElementById('monthLabel').textContent=`${MONTHS[viewMonth]} ${viewYear}`;
+  const daysInMonth=new Date(viewYear,viewMonth+1,0).getDate();
+  const people=allMembers();
+  let html='<div class="grid-dow">'+['Lun','Mar','Mer','Gio','Ven','Sab','Dom'].map(x=>`<span>${x}</span>`).join('')+'</div><div class="grid-weeks">';
+  const lead=(new Date(viewYear,viewMonth,1).getDay()+6)%7;
+  for(let i=0;i<lead;i++)html+='<div class="gcell out"></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const k=ymd(viewYear,viewMonth,d),dow=parseDate(k).getDay(),hol=holidayName(k);
+    const cls=['gcell'];if(k===todayKey())cls.push('today');if(dow===0||dow===6)cls.push('wknd');if(hol)cls.push('holiday');if(currentId&&locationFor(people.find(p=>p.id===currentId)||{},k))cls.push('mine');
+    let rows='';people.forEach(p=>{const loc=locationFor(p,k);if(loc)rows+=`<div class="person-row"><span class="member-dot" style="background:${memberColor(p.id)}"></span><span class="person-text"><span class="person-name">${esc(p.name)}</span><span class="person-loc">${esc(loc)}</span></span></div>`});
+    html+=`<div class="${cls.join(' ')}" data-key="${k}"${hol?` title="${esc(hol)}"`:''}><span class="gnum">${d}</span>${rows||'<span class="gempty">Nessuna posizione</span>'}</div>`;
+  }
+  const trail=(7-((lead+daysInMonth)%7))%7;for(let i=0;i<trail;i++)html+='<div class="gcell out"></div>';
+  document.getElementById('calendar').innerHTML=html+'</div>';
+  document.querySelectorAll('.gcell[data-key]').forEach(el=>el.addEventListener('click',()=>openDay(el.dataset.key)));
+  renderLegend();
+}
+function updateWhoButton(){document.getElementById('whoBtn').textContent=currentName?`Io: ${currentName}`:'Chi sei?'}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)}
+function renderProfiles(){
+  const list=allMembers();
+  document.getElementById('profileList').innerHTML=list.map(m=>m.managed
+    ?`<button class="profile-btn managed" disabled><span class="member-dot" style="background:${memberColor(m.id)}"></span>Stefano <small>(dal calendario principale)</small></button>`
+    :`<button class="profile-btn" data-member="${esc(m.id)}"><span class="member-dot" style="background:${memberColor(m.id)}"></span>${esc(m.name)}${m.id===currentId?' ✓':''}</button>`).join('');
+  document.querySelectorAll('.profile-btn[data-member]').forEach(btn=>btn.addEventListener('click',()=>selectProfile(btn.dataset.member)));
+}
+function openProfile(required=false){renderProfiles();document.getElementById('profileModal').classList.remove('hidden');document.getElementById('closeProfile').style.visibility=required?'hidden':'';setTimeout(()=>document.getElementById('newName').focus(),80)}
+function closeProfile(){if(!currentId)return;document.getElementById('profileModal').classList.add('hidden')}
+function selectProfile(id){const m=members[id];if(!m||!m.name)return;currentId=id;currentName=m.name;localStorage.setItem(SELF_KEY,id);localStorage.setItem(SELF_NAME_KEY,currentName);updateWhoButton();closeProfile();renderGrid();toast(`Profilo: ${currentName}`)}
+function addProfile(){
+  const name=normalizeName(document.getElementById('newName').value);
+  if(!name)return toast('Inserisci il tuo nome');
+  if(name.toLocaleLowerCase('it-IT')==='stefano')return toast('Stefano si aggiorna dal calendario principale');
+  const id=memberIdFromName(name);
+  members[id]=Object.assign({},members[id]||{},{name,days:(members[id]&&members[id].days)||{}});
+  if(!window.familyFb||!window.familyFb.ready)return toast('Sincronizzazione non disponibile');
+  window.familyFb.setMemberName(id,name).then(()=>{document.getElementById('newName').value='';selectProfile(id)}).catch(()=>syncError());
+}
+function knownLocations(){
+  const set=new Set(Object.values(STEFANO_DEFAULTS).filter(Boolean));
+  Object.values(stefanoLive).forEach(x=>x&&set.add(x));
+  Object.values(members).forEach(m=>Object.values((m&&m.days)||{}).forEach(x=>x&&set.add(x)));
+  return [...set].sort((a,b)=>a.localeCompare(b,'it')).slice(0,16);
+}
+function renderQuick(selected=''){
+  document.getElementById('quickLocations').innerHTML=knownLocations().map(loc=>`<button type="button" data-loc="${esc(loc)}" class="${loc===selected?'active':''}">${esc(loc)}</button>`).join('');
+  document.querySelectorAll('#quickLocations button').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('locationInput').value=btn.dataset.loc;renderQuick(btn.dataset.loc)}));
+}
+function openDay(k){
+  if(!currentId||!members[currentId]){openProfile(true);return}
+  editingKey=k;
+  const d=parseDate(k);
+  document.getElementById('dayTitle').textContent=`${DOW[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+  document.getElementById('locationLabel').textContent=`Dove sarà ${currentName}?`;
+  const loc=((members[currentId].days||{})[k])||'';
+  document.getElementById('locationInput').value=loc;renderQuick(loc);
+  document.getElementById('dayModal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('locationInput').focus(),80);
+}
+function closeDay(){document.getElementById('dayModal').classList.add('hidden');editingKey=''}
+function saveDay(){
+  if(!editingKey||!currentId)return;
+  const loc=document.getElementById('locationInput').value.trim();
+  if(!loc)return clearDay();
+  if(!window.familyFb||!window.familyFb.ready)return toast('Sincronizzazione non disponibile');
+  window.familyFb.setLocation(currentId,editingKey,loc).then(()=>{closeDay();toast('Posizione salvata')}).catch(()=>syncError());
+}
+function clearDay(){
+  if(!editingKey||!currentId)return;
+  if(!window.familyFb||!window.familyFb.ready)return toast('Sincronizzazione non disponibile');
+  window.familyFb.removeLocation(currentId,editingKey).then(()=>{closeDay();toast('Posizione cancellata')}).catch(()=>syncError());
+}
+function syncError(){document.getElementById('statusDot').className='dot error';document.getElementById('errorBanner').classList.add('show');toast('Errore di sincronizzazione')}
+function shiftMonth(delta){viewMonth+=delta;if(viewMonth<0){viewMonth=11;viewYear--}if(viewMonth>11){viewMonth=0;viewYear++}subscribeStefanoMonth();renderGrid()}
+function gotoToday(){const d=new Date();viewYear=d.getFullYear();viewMonth=d.getMonth();subscribeStefanoMonth();renderGrid()}
+function subscribeStefanoMonth(){if(!window.familyFb||!window.familyFb.ready)return;monthUnsubs.forEach(fn=>fn());monthUnsubs=[];stefanoLive={};const n=new Date(viewYear,viewMonth+1,0).getDate();for(let d=1;d<=n;d++){const k=ymd(viewYear,viewMonth,d);monthUnsubs.push(window.familyFb.watchStefanoLocation(k,val=>{stefanoLive[k]=val;renderGrid()},syncError))}}
+// Explicit bridge for the Firebase ES module. Classic-script lexical bindings
+// are not relied on across script types.
+window.syncError=syncError;
+window.subscribeStefanoMonth=subscribeStefanoMonth;
+window.onFamilyMembers=value=>{members=value&&typeof value==='object'?value:{};if(currentId&&members[currentId])currentName=members[currentId].name||currentName;updateWhoButton();renderProfiles();renderGrid();if(!currentId||!members[currentId])openProfile(true)};
+window.onFamilyConnected=online=>{document.getElementById('statusDot').className=`dot ${online?'online':'offline'}`};
+document.getElementById('prevMonth').addEventListener('click',()=>shiftMonth(-1));
+document.getElementById('nextMonth').addEventListener('click',()=>shiftMonth(1));
+document.getElementById('todayBtn').addEventListener('click',gotoToday);
+document.getElementById('whoBtn').addEventListener('click',()=>openProfile(false));
+document.getElementById('closeProfile').addEventListener('click',closeProfile);
+document.getElementById('addProfile').addEventListener('click',addProfile);
+document.getElementById('newName').addEventListener('keydown',e=>{if(e.key==='Enter')addProfile()});
+document.getElementById('closeDay').addEventListener('click',closeDay);
+document.getElementById('saveDay').addEventListener('click',saveDay);
+document.getElementById('clearDay').addEventListener('click',clearDay);
+document.getElementById('locationInput').addEventListener('input',e=>renderQuick(e.target.value.trim()));
+document.getElementById('dayModal').addEventListener('click',e=>{if(e.target.id==='dayModal')closeDay()});
+document.getElementById('profileModal').addEventListener('click',e=>{if(e.target.id==='profileModal')closeProfile()});
+(function(){const area=document.querySelector('.container');let x0=null,y0=null,t0=0;area.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now()},{passive:true});area.addEventListener('touchend',e=>{if(x0===null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Date.now()-t0<600&&Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.8)shiftMonth(dx<0?1:-1)},{passive:true})})();
+updateWhoButton();renderGrid();
+</script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getDatabase,ref,onValue,set,remove} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const firebaseConfig={
+  apiKey:"AIzaSyBAlnSafWq49z3D6o8fFUr5saSVsj5GDD8",
+  authDomain:"groceries-d6616.firebaseapp.com",
+  databaseURL:"https://groceries-d6616-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"groceries-d6616",
+  storageBucket:"groceries-d6616.firebasestorage.app",
+  messagingSenderId:"594673376000",
+  appId:"1:594673376000:web:e554686a4fe4f860b9b1e5",
+  measurementId:"G-R8MMWYWPP9"
+};
+try{
+  const app=initializeApp(firebaseConfig,'family-calendar');
+  const db=getDatabase(app);
+  // Family-written data stays in a dedicated location-only branch covered by
+  // the calendar's existing Firebase rules. The page never reads the parent.
+  const familyNode='travelCalendar/family';
+  window.familyFb={
+    ready:true,
+    setMemberName:(id,name)=>set(ref(db,`${familyNode}/members/${id}/name`),name),
+    setLocation:(id,k,loc)=>set(ref(db,`${familyNode}/members/${id}/days/${k}`),loc),
+    removeLocation:(id,k)=>remove(ref(db,`${familyNode}/members/${id}/days/${k}`)),
+    // Privacy boundary: subscribe to the location child only. The family page
+    // never requests a complete private day object from travelCalendar.
+    watchStefanoLocation:(k,cb,err)=>onValue(ref(db,`travelCalendar/days/${k}/loc`),snap=>{
+      cb(snap.exists()?String(snap.val()??''):null);
+    },err)
+  };
+  onValue(ref(db,'.info/connected'),snap=>window.onFamilyConnected&&window.onFamilyConnected(!!snap.val()));
+  onValue(ref(db,`${familyNode}/members`),snap=>window.onFamilyMembers&&window.onFamilyMembers(snap.val()||{}),()=>window.syncError&&window.syncError());
+  window.subscribeStefanoMonth&&window.subscribeStefanoMonth();
+}catch(e){console.error('Family calendar sync init failed:',e);window.syncError&&window.syncError();}
+</script>
+
+<!-- Bulk selection enhancement: select any days, including across months, then
+     set or clear the signed-in family member's location in one action. -->
+<style>
+.gcell.bulk-selectable{outline:1px dashed rgba(0,122,255,.35);outline-offset:-2px}
+.gcell.bulk-selected{outline:3px solid var(--primary);outline-offset:-3px;background:#e8f2ff!important}
+.bulk-bar{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:500;width:min(620px,calc(100% - 20px));display:flex;align-items:center;gap:7px;background:rgba(28,28,30,.94);color:#fff;padding:9px 10px;border-radius:16px;box-shadow:0 5px 22px rgba(0,0,0,.28);backdrop-filter:blur(12px)}
+.bulk-bar.hidden{display:none}.bulk-count{font-size:13px;font-weight:800;margin-right:auto;white-space:nowrap}.bulk-bar button{border:0;border-radius:11px;padding:8px 10px;font-size:12px;font-weight:750;cursor:pointer}.bulk-set{background:var(--primary);color:#fff}.bulk-clear{background:#5a5a5f;color:#fff}.bulk-cancel{background:#fff;color:var(--text)}
+.bulk-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.bulk-actions .btn{margin:0}.bulk-selection-note{font-size:12px;color:var(--secondary);line-height:1.4;margin-bottom:10px}
+body.bulk-mode .container{padding-bottom:105px}
+@media(max-width:520px){.bulk-bar{gap:5px;padding:8px}.bulk-bar button{padding:7px 8px;font-size:11px}.bulk-count{font-size:11px}}
+</style>
+<div class="bulk-bar hidden" id="bulkBar" aria-live="polite">
+  <span class="bulk-count" id="bulkCount">0 giorni</span>
+  <button class="bulk-set" id="bulkSetButton">Imposta luogo</button>
+  <button class="bulk-clear" id="bulkClearButton">Cancella</button>
+  <button class="bulk-cancel" id="bulkCancelButton">Annulla</button>
+</div>
+<div class="modal-overlay hidden" id="bulkLocationModal"><div class="modal">
+  <div class="modal-header"><span class="title">Posizione per più giorni</span><button id="bulkLocationClose">Chiudi</button></div>
+  <div class="modal-body">
+    <p class="bulk-selection-note" id="bulkSelectionNote"></p>
+    <div class="fieldcard"><div class="label">Dove sarai?</div><input class="text-in" id="bulkLocationInput" maxlength="80" autocomplete="off" placeholder="Es. Torino"><div class="quick" id="bulkQuickLocations"></div></div>
+    <div class="bulk-actions"><button class="btn btn-primary" id="bulkApplyButton">Applica</button><button class="btn btn-secondary" id="bulkVisibleButton">Seleziona mese</button></div>
+    <p class="note">La posizione sarà applicata solo al tuo profilo e solo ai giorni selezionati.</p>
+  </div>
+</div></div>
+<script>
+let bulkMode=false;
+const bulkSelected=new Set();
+const bulkButton=document.createElement('button');
+bulkButton.id='bulkButton';bulkButton.textContent='✓ Seleziona';bulkButton.title='Seleziona più giorni';
+document.querySelector('.header-tools').appendChild(bulkButton);
+function selectedLabel(){const n=bulkSelected.size;return `${n} ${n===1?'giorno':'giorni'}`}
+function paintBulkSelection(){
+  document.querySelectorAll('.gcell[data-key]').forEach(cell=>{
+    cell.classList.toggle('bulk-selectable',bulkMode);
+    cell.classList.toggle('bulk-selected',bulkSelected.has(cell.dataset.key));
+  });
+  document.getElementById('bulkCount').textContent=selectedLabel();
+  document.getElementById('bulkBar').classList.toggle('hidden',!bulkMode);
+  document.getElementById('bulkSetButton').disabled=false;
+  document.getElementById('bulkClearButton').disabled=bulkSelected.size===0;
+}
+const baseRenderGrid=renderGrid;
+renderGrid=function(){baseRenderGrid();paintBulkSelection()};
+function setBulkMode(on){
+  if(on&&(!currentId||!members[currentId])){openProfile(true);return}
+  bulkMode=!!on;document.body.classList.toggle('bulk-mode',bulkMode);
+  bulkButton.textContent=bulkMode?'✓ Selezione attiva':'✓ Seleziona';
+  if(!bulkMode)bulkSelected.clear();
+  paintBulkSelection();
+}
+function toggleBulkDay(key){bulkSelected.has(key)?bulkSelected.delete(key):bulkSelected.add(key);paintBulkSelection()}
+document.getElementById('calendar').addEventListener('click',e=>{
+  if(!bulkMode)return;
+  const cell=e.target.closest('.gcell[data-key]');if(!cell)return;
+  e.preventDefault();e.stopPropagation();toggleBulkDay(cell.dataset.key);
+},true);
+function fillBulkQuick(selected=''){
+  document.getElementById('bulkQuickLocations').innerHTML=knownLocations().map(loc=>`<button type="button" data-loc="${esc(loc)}" class="${loc===selected?'active':''}">${esc(loc)}</button>`).join('');
+  document.querySelectorAll('#bulkQuickLocations button').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('bulkLocationInput').value=btn.dataset.loc;fillBulkQuick(btn.dataset.loc)}));
+}
+function openBulkLocation(){
+  document.getElementById('bulkSelectionNote').textContent=bulkSelected.size
+    ?`Applica una posizione a ${selectedLabel()}. Puoi cambiare mese e continuare a selezionare.`
+    :'Nessun giorno selezionato. Usa "Seleziona mese" oppure chiudi e tocca i giorni nel calendario.';
+  document.getElementById('bulkLocationInput').value='';fillBulkQuick();
+  document.getElementById('bulkLocationModal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('bulkLocationInput').focus(),80);
+}
+function closeBulkLocation(){document.getElementById('bulkLocationModal').classList.add('hidden')}
+async function applyBulk(clearLocations){
+  if(!currentId||!window.familyFb||!window.familyFb.ready)return toast('Sincronizzazione non disponibile');
+  if(!bulkSelected.size)return toast('Seleziona almeno un giorno');
+  const loc=clearLocations?'':document.getElementById('bulkLocationInput').value.trim();
+  if(!clearLocations&&!loc)return toast('Inserisci una posizione');
+  const keys=[...bulkSelected];
+  try{
+    await Promise.all(keys.map(k=>clearLocations?window.familyFb.removeLocation(currentId,k):window.familyFb.setLocation(currentId,k,loc)));
+    closeBulkLocation();setBulkMode(false);toast(clearLocations?'Posizioni cancellate':`Posizione applicata a ${keys.length} giorni`);
+  }catch(e){syncError()}
+}
+function selectVisibleMonth(){
+  const count=new Date(viewYear,viewMonth+1,0).getDate();
+  for(let d=1;d<=count;d++)bulkSelected.add(ymd(viewYear,viewMonth,d));
+  closeBulkLocation();paintBulkSelection();toast('Mese visibile selezionato');
+}
+bulkButton.addEventListener('click',()=>setBulkMode(!bulkMode));
+document.getElementById('bulkSetButton').addEventListener('click',openBulkLocation);
+document.getElementById('bulkClearButton').addEventListener('click',()=>{if(confirm(`Cancellare la tua posizione da ${selectedLabel()}?`))applyBulk(true)});
+document.getElementById('bulkCancelButton').addEventListener('click',()=>setBulkMode(false));
+document.getElementById('bulkLocationClose').addEventListener('click',closeBulkLocation);
+document.getElementById('bulkApplyButton').addEventListener('click',()=>applyBulk(false));
+document.getElementById('bulkVisibleButton').addEventListener('click',selectVisibleMonth);
+document.getElementById('bulkLocationInput').addEventListener('input',e=>fillBulkQuick(e.target.value.trim()));
+document.getElementById('bulkLocationModal').addEventListener('click',e=>{if(e.target.id==='bulkLocationModal')closeBulkLocation()});
+paintBulkSelection();
+</script>
+</body>
+</html>
