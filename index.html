@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Calendario famiglia">
+<meta name="apple-mobile-web-app-title" content="Famiglia v4">
 <meta name="theme-color" content="#007aff">
-<title>Calendario famiglia</title>
+<title>Famiglia v4</title>
 <script>
 (function () {
   const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>" +
@@ -20,7 +20,7 @@
   const add = (rel, href) => { const el = document.createElement('link'); el.rel = rel; el.href = href; document.head.appendChild(el); };
   add('icon', uri); add('apple-touch-icon', uri);
   add('manifest', 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify({
-    name:'Calendario famiglia', short_name:'Famiglia', display:'standalone', start_url:'.',
+    name:'Famiglia v4', short_name:'Famiglia v4', display:'standalone', start_url:'.',
     background_color:'#f2f2f7', theme_color:'#007aff', icons:[{src:uri,sizes:'any',type:'image/svg+xml',purpose:'any maskable'}]
   })));
 })();
@@ -39,13 +39,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 .grid-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px}.grid-dow span{text-align:center;font-size:10px;font-weight:700;color:var(--secondary);text-transform:uppercase}.grid-weeks{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}.gcell{min-height:92px;background:var(--card);border-radius:8px;padding:4px;cursor:pointer;display:flex;flex-direction:column;gap:3px;overflow:hidden;box-shadow:0 1px 1px rgba(0,0,0,.04);position:relative}.gcell.out{background:transparent;box-shadow:none;pointer-events:none}.gcell.wknd{background:#ececf2}.gcell:active{filter:brightness(.96)}.gcell.mine{box-shadow:inset 0 -3px 0 rgba(0,122,255,.25),0 1px 1px rgba(0,0,0,.04)}
 .gnum{font-size:11px;font-weight:700;line-height:18px;min-width:18px;height:18px;text-align:center;align-self:flex-start}.gcell.today .gnum{background:var(--primary);color:#fff;border-radius:50%}.person-row{display:flex;align-items:flex-start;gap:3px;min-width:0;font-size:8.5px;line-height:1.15}.person-row .member-dot{width:6px;height:6px;margin-top:2px}.person-text{min-width:0;overflow:hidden}.person-name{font-weight:800}.person-loc{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#444}.gempty{font-size:8px;color:var(--secondary);margin-top:auto}.holiday{box-shadow:inset 0 3px 0 #e0a800,0 1px 1px rgba(0,0,0,.04)}.holiday:not(.today) .gnum{background:#e0a800;color:#fff;border-radius:9px}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:2000;display:flex;align-items:flex-end;justify-content:center}.modal-overlay.hidden{display:none}.modal{background:var(--bg);width:100%;max-width:640px;border-radius:16px 16px 0 0;max-height:92dvh;display:flex;flex-direction:column;animation:up .22s ease-out}@keyframes up{from{transform:translateY(100%)}to{transform:none}}.modal-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:.5px solid var(--border);background:var(--card);border-radius:16px 16px 0 0}.modal-header .title{font-size:16px;font-weight:700}.modal-header button{background:none;border:0;color:var(--primary);font-size:15px;font-weight:600;padding:4px;cursor:pointer}.modal-header .danger{color:var(--danger)}.modal-body{overflow:auto;padding:14px 16px 24px}.fieldcard{background:var(--card);border-radius:var(--radius);padding:12px;margin-bottom:10px}.label{font-size:12px;font-weight:700;color:var(--secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}.text-in{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:16px;background:var(--input);outline:none;color:var(--text)}.text-in:focus{border-color:var(--primary);background:#fff}.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.quick button{font-size:13px;padding:5px 11px;border-radius:14px;border:1px solid var(--border);background:var(--input);color:var(--text);cursor:pointer}.quick button.active{background:var(--primary);border-color:var(--primary);color:#fff}.btn{width:100%;padding:14px;border:0;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer}.btn-primary{background:var(--primary);color:#fff}.btn-secondary{background:var(--input);color:var(--text);margin-top:8px}.note{font-size:11.5px;color:var(--secondary);margin-top:8px;line-height:1.35}
-.profile-list{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}.profile-btn{display:flex;align-items:center;gap:9px;width:100%;border:0;background:var(--card);padding:11px 12px;border-radius:11px;font-size:15px;font-weight:700;text-align:left;cursor:pointer}.profile-btn .member-dot{width:12px;height:12px}.profile-btn.managed{opacity:.55;cursor:default}.new-row{display:flex;gap:7px}.new-row input{flex:1}.new-row button{width:auto;padding:0 16px}.error-banner{display:none;background:#ffd6d2;color:#7b1711;border-radius:10px;padding:9px 11px;font-size:12px;margin-bottom:10px}.error-banner.show{display:block}.toast{position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:11px 19px;border-radius:20px;font-size:14px;z-index:3000;opacity:0;transition:opacity .25s;pointer-events:none}.toast.show{opacity:1}
+.profile-list{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}.profile-btn{display:flex;align-items:center;gap:9px;width:100%;border:0;background:var(--card);padding:11px 12px;border-radius:11px;font-size:15px;font-weight:700;text-align:left;cursor:pointer}.profile-btn .member-dot{width:12px;height:12px}.profile-btn.managed{opacity:.55;cursor:default}.profile-item{display:flex;align-items:stretch;gap:6px}.profile-item .profile-btn{flex:1;width:auto}.profile-delete{border:0;background:#ffe4e1;color:#a82119;border-radius:11px;padding:0 11px;font-size:12px;font-weight:750;cursor:pointer}.profile-delete:active{opacity:.7}.new-row{display:flex;gap:7px}.new-row input{flex:1}.new-row button{width:auto;padding:0 16px}.error-banner{display:none;background:#ffd6d2;color:#7b1711;border-radius:10px;padding:9px 11px;font-size:12px;margin-bottom:10px}.error-banner.show{display:block}.toast{position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:11px 19px;border-radius:20px;font-size:14px;z-index:3000;opacity:0;transition:opacity .25s;pointer-events:none}.toast.show{opacity:1}
 @media(max-width:520px){.header-top{align-items:flex-start}.month-nav{gap:4px}.month-label{min-width:108px;font-size:14px}.container{padding-left:7px;padding-right:7px}.grid-weeks,.grid-dow{gap:2px}.gcell{min-height:86px;padding:3px}.person-row{font-size:7.8px}.member-pill{font-size:11px;padding:4px 8px}}
 </style>
 </head>
 <body>
 <div class="header">
-  <div class="header-top"><h1>👨‍👩‍👧‍👦 Famiglia <span class="dot" id="statusDot" title="Stato sincronizzazione"></span></h1><div class="month-nav"><button id="prevMonth" aria-label="Mese precedente">‹</button><span class="month-label" id="monthLabel">—</span><button id="nextMonth" aria-label="Mese successivo">›</button></div></div>
+  <div class="header-top"><h1>👨‍👩‍👧‍👦 Famiglia v4 <span class="dot" id="statusDot" title="Stato sincronizzazione"></span></h1><div class="month-nav"><button id="prevMonth" aria-label="Mese precedente">‹</button><span class="month-label" id="monthLabel">—</span><button id="nextMonth" aria-label="Mese successivo">›</button></div></div>
   <div class="header-tools"><button class="who" id="whoBtn">Chi sei?</button><button id="todayBtn">Oggi</button></div>
 </div>
 <div class="container">
@@ -61,6 +61,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 const MONTHS=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 const DOW=['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
 const IT_HOLIDAYS={'01-01':'Capodanno','01-06':'Epifania','04-25':'Liberazione','05-01':'Festa del Lavoro','06-02':'Festa della Repubblica','08-15':'Ferragosto','11-01':'Ognissanti','12-08':'Immacolata','12-25':'Natale','12-26':'Santo Stefano','04-05':'Pasqua','04-06':'Pasquetta'};
+const APP_VERSION=4; // Increment by 1 for every future review: v5, v6, etc.
 const SELF_KEY='familyCalendarMemberId';
 const SELF_NAME_KEY='familyCalendarMemberName';
 const STEFANO_ID='stefano';
@@ -164,7 +165,14 @@ function allMembers(){
   Object.entries(members).forEach(([id,m])=>{if(id!==STEFANO_ID&&m&&m.name)list.push({id,name:m.name,days:m.days||{},managed:false})});
   return list.sort((a,b)=>a.managed?-1:b.managed?1:a.name.localeCompare(b.name,'it'));
 }
-function stefanoLocation(k){return Object.prototype.hasOwnProperty.call(stefanoLive,k)?stefanoLive[k]:(STEFANO_DEFAULTS[k]||'')}
+function stefanoLocation(k){
+  // Firebase returns null when the main calendar has no cloud override for the
+  // day. In that case the main app itself falls back to its published SEED, so
+  // the family app must do the same. An explicit empty string remains a valid
+  // override and intentionally clears the location.
+  const hasLive=Object.prototype.hasOwnProperty.call(stefanoLive,k);
+  return hasLive&&stefanoLive[k]!==null?stefanoLive[k]:(STEFANO_DEFAULTS[k]||'');
+}
 function locationFor(member,k){return member.managed?stefanoLocation(k):((member.days&&member.days[k])||'')}
 function renderLegend(){
   document.getElementById('memberLegend').innerHTML=allMembers().map(m=>`<span class="member-pill"><span class="member-dot" style="background:${memberColor(m.id)}"></span>${esc(m.name)}</span>`).join('');
@@ -193,8 +201,26 @@ function renderProfiles(){
   const list=allMembers();
   document.getElementById('profileList').innerHTML=list.map(m=>m.managed
     ?`<button class="profile-btn managed" disabled><span class="member-dot" style="background:${memberColor(m.id)}"></span>Stefano <small>(dal calendario principale)</small></button>`
-    :`<button class="profile-btn" data-member="${esc(m.id)}"><span class="member-dot" style="background:${memberColor(m.id)}"></span>${esc(m.name)}${m.id===currentId?' ✓':''}</button>`).join('');
+    :`<div class="profile-item"><button class="profile-btn" data-member="${esc(m.id)}"><span class="member-dot" style="background:${memberColor(m.id)}"></span>${esc(m.name)}${m.id===currentId?' ✓':''}</button><button class="profile-delete" data-delete-member="${esc(m.id)}" aria-label="Rimuovi ${esc(m.name)}">Rimuovi</button></div>`).join('');
   document.querySelectorAll('.profile-btn[data-member]').forEach(btn=>btn.addEventListener('click',()=>selectProfile(btn.dataset.member)));
+  document.querySelectorAll('.profile-delete[data-delete-member]').forEach(btn=>btn.addEventListener('click',()=>removeProfile(btn.dataset.deleteMember)));
+}
+async function removeProfile(id){
+  const member=members[id];
+  if(!member||id===STEFANO_ID)return;
+  const name=member.name||'questo utente';
+  if(!confirm(`Rimuovere ${name}? Verranno cancellate anche tutte le sue posizioni. Questa azione non può essere annullata.`))return;
+  if(!window.familyFb||!window.familyFb.ready)return toast('Sincronizzazione non disponibile');
+  try{
+    await window.familyFb.removeMember(id);
+    delete members[id];
+    if(currentId===id){
+      currentId='';currentName='';
+      localStorage.removeItem(SELF_KEY);localStorage.removeItem(SELF_NAME_KEY);
+      updateWhoButton();openProfile(true);
+    }
+    renderProfiles();renderGrid();toast(`${name} rimosso`);
+  }catch(e){syncError()}
 }
 function openProfile(required=false){renderProfiles();document.getElementById('profileModal').classList.remove('hidden');document.getElementById('closeProfile').style.visibility=required?'hidden':'';setTimeout(()=>document.getElementById('newName').focus(),80)}
 function closeProfile(){if(!currentId)return;document.getElementById('profileModal').classList.add('hidden')}
@@ -290,6 +316,7 @@ try{
   window.familyFb={
     ready:true,
     setMemberName:(id,name)=>set(ref(db,`${familyNode}/members/${id}/name`),name),
+    removeMember:(id)=>remove(ref(db,`${familyNode}/members/${id}`)),
     setLocation:(id,k,loc)=>set(ref(db,`${familyNode}/members/${id}/days/${k}`),loc),
     removeLocation:(id,k)=>remove(ref(db,`${familyNode}/members/${id}/days/${k}`)),
     // Privacy boundary: subscribe to the location child only. The family page
